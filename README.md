@@ -1,0 +1,4 @@
+# DJANGO + ANGULAR
+___
+## DJANGO ADMIN INFO
+___
