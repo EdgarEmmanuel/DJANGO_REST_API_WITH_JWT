@@ -1,12 +1,19 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+import json
 
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.core import serializers
+from .models import User, Todo
+from .serializers import UserSerializers
+from rest_framework import status
 
 # Create your views here.
 
 
 def index(request):
-    return HttpResponse("Hello world")
+    allUsers = User.objects.all()
+    data = UserSerializers(allUsers, many=True)
+    return JsonResponse(data.data,safe=False,status=status.HTTP_200_OK)
 
 
 def detail_user_todos(request, user_id):
