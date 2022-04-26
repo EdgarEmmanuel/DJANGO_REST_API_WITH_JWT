@@ -4,8 +4,11 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from .models import User, Todo
-from .serializers import UserSerializers
+from .serializers import UserSerializers, TodoSerializers
 from rest_framework import status
+from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
+
 
 # Create your views here.
 
@@ -13,12 +16,14 @@ from rest_framework import status
 def index(request):
     allUsers = User.objects.all()
     data = UserSerializers(allUsers, many=True)
-    return JsonResponse(data.data,safe=False,status=status.HTTP_200_OK)
+    return JsonResponse(data.data, safe=False, status=status.HTTP_200_OK)
 
 
 def detail_user_todos(request, user_id):
+    todos = Todo.objects.get(user=user_id)
+    data = TodoSerializers(todos, many=True)
     response = " you are looking all the todo of the user with id: %s" % user_id
-    return HttpResponse(response)
+    return JsonResponse(data.data, safe=False, status=status.HTTP_200_OK)
 
 
 def detail_user_todo(request, user_id, todo_id):
@@ -26,7 +31,10 @@ def detail_user_todo(request, user_id, todo_id):
     return HttpResponse(response)
 
 
+@csrf_exempt
 def create_user(request):
+    user = JSONParser().parse(request)
+    print(user)
     response = " You wan to create a user"
     return HttpResponse(response)
 
