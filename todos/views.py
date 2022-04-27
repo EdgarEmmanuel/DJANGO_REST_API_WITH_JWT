@@ -98,9 +98,19 @@ def create_todo(request, user_id):
 @api_view(['POST'])
 def login_user(request):
     form_parsed = JSONParser().parse(request)
-    print(form_parsed)
-    response = f"you want to login the user"
-    return HttpResponse(response)
+    email = form_parsed.get("email")
+    form_password = form_parsed.get("password")
+    try:
+        user = User.objects.get(email__exact=email)
+        database_password = user.password
+
+        isTruePassword = check_password(form_password, database_password)
+        print(isTruePassword)
+        response = f"you want to login the user"
+        return HttpResponse(response)
+    except Exception as err:
+        return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 def update_user_informations(request, user_id):
