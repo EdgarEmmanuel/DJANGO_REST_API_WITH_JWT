@@ -42,11 +42,11 @@ def create_user(request):
             surname = user_from_form.get("surname")
             password = make_password(user_from_form.get("password"))
             email = user_from_form.get("email")
-            user = User(name, surname, password, email)
+            user = User( name=name, surname=surname, password=password, email=email)
             user.save()
-            # finalizeUser.password = make_password(finalizeUser.password)
-            # finalizeUser.save()
-            return JsonResponse({'message': 'User saved Successfully', 'savedUser': finalizeUser}, safe=False,
+
+            final = UserSerializers(user, many=False)
+            return JsonResponse({'message': 'User saved Successfully', 'savedUser': final.data}, safe=False,
                                 status=status.HTTP_200_OK)
         response = "Sorry ! We can not process your request with empty values"
         return JsonResponse({'message': response}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
