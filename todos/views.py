@@ -14,7 +14,7 @@ from rest_framework.decorators import api_view
 
 # Create your views here.
 
-
+@api_view(['GET'])
 def index(request):
     allUsers = User.objects.all()
     data = UserSerializers(allUsers, many=True)
@@ -33,9 +33,16 @@ def detail_user_todos(request, user_id):
         return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
+@api_view(['GET'])
 def detail_user_todo(request, user_id, todo_id):
-    response = f"you are seeking the todo id : {todo_id} of the user {user_id}"
-    return HttpResponse(response)
+    """Get the task detail with ID: <todo_id> of the user with ID: <user_id>"""
+    try:
+        user = User.objects.get(pk=user_id)
+        todo_formatted = Todo.objects.filter(user=user)[0]
+        data = TodoSerializers(todo_formatted)
+        return JsonResponse(data.data, safe=False,status=status.HTTP_200_OK)
+    except Exception as err:
+        return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])
