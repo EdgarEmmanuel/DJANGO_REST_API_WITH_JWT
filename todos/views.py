@@ -23,11 +23,14 @@ def index(request):
 
 @api_view(['GET'])
 def detail_user_todos(request, user_id):
-    user = User.objects.get(pk=user_id)
-    todos = Todo.objects.all().filter(user=user)
-    data = TodoSerializers(todos, many=True)
-    response = " you are looking all the todo of the user with id: %s" % user_id
-    return JsonResponse(data.data, safe=False, status=status.HTTP_200_OK)
+    """Get the todos of the user with the ID : <user_id>"""
+    try:
+        user = User.objects.get(pk=user_id)
+        todos = Todo.objects.all().filter(user=user)
+        data = TodoSerializers(todos, many=True)
+        return JsonResponse(data.data, safe=False, status=status.HTTP_200_OK)
+    except Exception as err:
+        return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
 def detail_user_todo(request, user_id, todo_id):
