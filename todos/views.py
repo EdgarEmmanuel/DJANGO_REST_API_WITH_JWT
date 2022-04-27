@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from .models import User, Todo
-from .serializers import UserSerializers, TodoSerializers
+from .serializers import UserSerializers, TodoSerializers, LoginSerializer
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
@@ -93,6 +93,14 @@ def create_todo(request, user_id):
             return JsonResponse({'message': response}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
     except Exception as err:
         return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def login_user(request):
+    form_parsed = JSONParser().parse(request)
+    print(form_parsed)
+    response = f"you want to login the user"
+    return HttpResponse(response)
 
 
 def update_user_informations(request, user_id):
