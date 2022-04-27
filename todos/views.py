@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
+from rest_framework.decorators import api_view
 
 
 # Create your views here.
@@ -34,6 +35,7 @@ def detail_user_todo(request, user_id, todo_id):
 
 @csrf_exempt
 def create_user(request):
+    """For Creating a User"""
     user_from_form = JSONParser().parse(request)
     finalizeUser = UserSerializers(data=user_from_form)
     try:
@@ -42,7 +44,7 @@ def create_user(request):
             surname = user_from_form.get("surname")
             password = make_password(user_from_form.get("password"))
             email = user_from_form.get("email")
-            user = User( name=name, surname=surname, password=password, email=email)
+            user = User(name=name, surname=surname, password=password, email=email)
             user.save()
 
             final = UserSerializers(user, many=False)
@@ -54,9 +56,31 @@ def create_user(request):
         return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
+@api_view(['POST'])
 def create_todo(request, user_id):
-    response = f"you want to create a todo for the user {user_id}"
-    return HttpResponse(response)
+    """For Creating a task for the user with id <user_id>"""
+    try:
+        user = User.objects.get(pk=user_id)
+        if user.id is not None:
+            todo_from_form = JSONParser().parse(request)
+            todo_serialized = TodoSerializers(data=todo_from_form)
+            if todo_serialized.is_valid():
+                title = todo_from_form.get("title")
+                description = todo_from_form.get("description")
+                is_done = todo_from_form.get("is_done")
+                todo = Todo(title=title, description=description, is_done=is_done, user=user)
+                todo.save()
+
+                response = TodoSerializers(todo, many=False)
+                return JsonResponse({'message': 'Todo saved Successfully', 'savedUser': response.data}, safe=False,
+                                    status=status.HTTP_200_OK)
+            response = "Sorry ! We can not process your request with empty values"
+            return JsonResponse({'message': response}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            response = f"Sorry ! We can not process your request , the user with ID: {user_id} does not exist"
+            return JsonResponse({'message': response}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as err:
+        return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
 def update_user_informations(request, user_id):
