@@ -12,9 +12,3 @@ class TodoSerializers(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title', 'description', 'is_done', 'user')
-
-
-class LoginSerializer(serializers.ModelSerializer):
-    class Meta:
-        model= User
-        fields=("email", "password")

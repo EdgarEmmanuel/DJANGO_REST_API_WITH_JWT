@@ -1,13 +1,8 @@
-import json
-
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.core import serializers
 from .models import User, Todo
-from .serializers import UserSerializers, TodoSerializers, LoginSerializer
+from .serializers import UserSerializers, TodoSerializers
 from rest_framework import status
 from rest_framework.parsers import JSONParser
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.decorators import api_view,authentication_classes, permission_classes
 from rest_framework_jwt.settings import api_settings
