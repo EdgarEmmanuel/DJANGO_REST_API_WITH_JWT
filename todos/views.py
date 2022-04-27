@@ -21,8 +21,10 @@ def index(request):
     return JsonResponse(data.data, safe=False, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
 def detail_user_todos(request, user_id):
-    todos = Todo.objects.get(user=user_id)
+    user = User.objects.get(pk=user_id)
+    todos = Todo.objects.all().filter(user=user)
     data = TodoSerializers(todos, many=True)
     response = " you are looking all the todo of the user with id: %s" % user_id
     return JsonResponse(data.data, safe=False, status=status.HTTP_200_OK)
@@ -33,7 +35,7 @@ def detail_user_todo(request, user_id, todo_id):
     return HttpResponse(response)
 
 
-@csrf_exempt
+@api_view(['POST'])
 def create_user(request):
     """For Creating a User"""
     user_from_form = JSONParser().parse(request)
