@@ -12,6 +12,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.decorators import api_view,authentication_classes, permission_classes
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
@@ -20,6 +22,8 @@ JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 # Create your views here.
 
 @api_view(['GET'])
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 def index(request):
     allUsers = User.objects.all()
     data = UserSerializers(allUsers, many=True)
