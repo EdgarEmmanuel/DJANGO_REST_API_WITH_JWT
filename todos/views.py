@@ -9,7 +9,12 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,authentication_classes, permission_classes
+from rest_framework_jwt.settings import api_settings
+from django.contrib.auth import authenticate
+
+JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
+JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 
 # Create your views here.
@@ -96,7 +101,10 @@ def create_todo(request, user_id):
 
 
 @api_view(['POST'])
+@authentication_classes([]) # Add this
+@permission_classes([]) # Maybe add this too
 def login_user(request):
+    """To login the User"""
     form_parsed = JSONParser().parse(request)
     email = form_parsed.get("email")
     form_password = form_parsed.get("password")
@@ -105,11 +113,16 @@ def login_user(request):
         database_password = user.password
 
         isTruePassword = check_password(form_password, database_password)
-        print(isTruePassword)
-        response = f"you want to login the user"
-        return HttpResponse(response)
+        if isTruePassword:
+            final_user = authenticate(email=email, password=form_password)
+            payload = JWT_PAYLOAD_HANDLER(user)
+            jwt_token = JWT_ENCODE_HANDLER(payload)
+            response = f"User Logged In Successfully"
+            return JsonResponse({'message': response, "token": jwt_token}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+        response = f"Sorry ! We can not process your request , the user with thie email and password does not exist"
+        return JsonResponse({'message': response}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
     except Exception as err:
-        return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({'message': f"here {err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
