@@ -8,6 +8,7 @@ from .serializers import UserSerializers, TodoSerializers
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password, check_password
 
 
 # Create your views here.
@@ -33,10 +34,24 @@ def detail_user_todo(request, user_id, todo_id):
 
 @csrf_exempt
 def create_user(request):
-    user = JSONParser().parse(request)
-    print(user)
-    response = " You wan to create a user"
-    return HttpResponse(response)
+    user_from_form = JSONParser().parse(request)
+    finalizeUser = UserSerializers(data=user_from_form)
+    try:
+        if finalizeUser.is_valid():
+            name = user_from_form.get("name")
+            surname = user_from_form.get("surname")
+            password = make_password(user_from_form.get("password"))
+            email = user_from_form.get("email")
+            user = User(name, surname, password, email)
+            user.save()
+            # finalizeUser.password = make_password(finalizeUser.password)
+            # finalizeUser.save()
+            return JsonResponse({'message': 'User saved Successfully', 'savedUser': finalizeUser}, safe=False,
+                                status=status.HTTP_200_OK)
+        response = "Sorry ! We can not process your request with empty values"
+        return JsonResponse({'message': response}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
+    except ValueError as err:
+        return JsonResponse({'message': f"{err.__str__()}"}, safe=False, status=status.HTTP_401_UNAUTHORIZED)
 
 
 def create_todo(request, user_id):
