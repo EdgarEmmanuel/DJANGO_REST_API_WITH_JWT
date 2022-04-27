@@ -31,6 +31,8 @@ def index(request):
 
 
 @api_view(['GET'])
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 def detail_user_todos(request, user_id):
     """Get the todos of the user with the ID : <user_id>"""
     try:
@@ -43,6 +45,8 @@ def detail_user_todos(request, user_id):
 
 
 @api_view(['GET'])
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 def detail_user_todo(request, user_id, todo_id):
     """Get the task detail with ID: <todo_id> of the user with ID: <user_id>"""
     try:
@@ -78,6 +82,8 @@ def create_user(request):
 
 
 @api_view(['POST'])
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 def create_todo(request, user_id):
     """For Creating a task for the user with id <user_id>"""
     try:
@@ -130,11 +136,17 @@ def login_user(request):
 
 
 
+@api_view(['PUT'])
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 def update_user_informations(request, user_id):
     response = f"you want to update the informations fo the user {user_id}"
     return HttpResponse(response)
 
 
+@api_view(['PUT'])
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 def update_user_todo(request, user_id, todo_id):
     response = f"you want to update the todo id: {todo_id} of the user with ID:{user_id}"
     return HttpResponse(response)
