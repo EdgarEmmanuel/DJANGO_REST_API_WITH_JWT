@@ -132,6 +132,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+#========== FOR SETTING UP JWT AND CSRF
+
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8081',
@@ -140,6 +143,7 @@ CORS_ORIGIN_WHITELIST = (
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1']
 
 
+# =============== SETTING UP THE JWT =============
 AUTH_USER_MODEL = 'todos.User'
 REST_FRAMEWORK = {
      'DEFAULT_PERMISSION_CLASSES': [

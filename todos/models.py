@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
+
 # Create your models here.
 
 
@@ -17,6 +18,7 @@ class UserManager(BaseUserManager):
     creating a manager for a custom user model
     https://docs.djangoproject.com/en/3.0/topics/auth/customizing/#writing-a-manager-for-a-custom-user-model
     '''
+
     def create_user(self, email, password=None):
         """
         Create and return a `User` with an email, username and password.
@@ -47,6 +49,7 @@ class UserManager(BaseUserManager):
 
     def get_by_natural_key(self, username):
         return self.get(email=username)
+
 
 class User(AbstractBaseUser):
     name = models.CharField(max_length=200)
